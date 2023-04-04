@@ -28,8 +28,9 @@ public class Hand {
         p2Cards.add(p2card3);
         p2Cards.add(p2card4);
         p2Cards.add(p2card5);
+        Deck deck = new Deck();
         for(DrawACard card:p1Cards){
-            //card = Deck.getACard();
+            card = deck.getACard();
         }
     }
     
@@ -44,5 +45,14 @@ public class Hand {
         
         return count;
         
+    }
+    public ArrayList<DrawACard> getHand(String player){
+        if("p1".equals(player)){
+            return p1Cards;
+        }
+        else if("p2".equals(player)){
+            return p2Cards;
+        }
+        return null;
     }
 }
