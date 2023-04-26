@@ -5,12 +5,7 @@ package com.mycompany.finalprojectvis2;
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 
-
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,13 +28,19 @@ public class CribbageWindow extends javax.swing.JFrame {
     private boolean round1 ;  //getting rid of a card round
     private boolean counting; // counting to 31 back and forth 
     private boolean countingHands; //counting each hands' values
-    //private boolean p1HasCrib; // to know which player has the crib -- true = p1 has crib(ppints will go to them)
     private ArrayList<DrawACard> p1Cards,p2Cards,crib; //holds the card info (image, suit, etc from api)
     private Hand player1Hand,player2Hand;
     private ArrayList<ArrayList> cardPiles;
     private Player player1, player2;
     private int count = 0;
     private ArrayList<DrawACard> countList;
+    private ArrayList<DrawACard> countingUsedList;
+    private ArrayList<JLabel> countingUsedListLbls;
+    private ArrayList<int[]> dimensions;
+    private int[] p1dimensions, p2dimensions;
+    private boolean p1ThrewLast = false;
+    private boolean p2ThrewLast = false;
+    private int go; //count of how many times go has been pressed - once both players press it new count (no one has cards low enough)
 
     public class MouseClickHandler extends java.awt.event.MouseAdapter {
 
@@ -49,10 +50,15 @@ public class CribbageWindow extends javax.swing.JFrame {
          */
         @Override
         public void mouseClicked(java.awt.event.MouseEvent evt) {
+            
             //if in round1 -- round where we get rid of a card
+            
             //deck = new Deck();
             JLabel comp = null;
             DrawACard card = null;
+            p1ThrewLast = false;
+            p2ThrewLast = false;
+            int x = evt.getXOnScreen();
             JLabel componentClicked = (JLabel) evt.getComponent();
             System.out.println("here");
             if(round1 == true){
@@ -66,19 +72,23 @@ public class CribbageWindow extends javax.swing.JFrame {
                             if(labelPiles.get(i).get(j) == componentClicked){ // i = which pile , j = which card in pile
                                 comp = (JLabel)labelPiles.get(i).get(j);
                                 card = (DrawACard) cardPiles.get(i).get(j);
-                                comp.setIcon(null);
-                                labelPiles.get(i).remove(comp);
+                                //comp.setIcon(null);
+                                DrawACard lastCard = (DrawACard)cardPiles.get(i).get(cardPiles.get(i).size()-1);
+                                JLabel lastLabel = (JLabel)labelPiles.get(i).get(labelPiles.get(i).size()-1);
+                                //redraws the cards so there is no empty space where the crib was
+                                //if its not the last card in the row, move that last card to this empty spot and remove image from last
+                                for(int h = 0; h < labelPiles.get(i).size() - (j+1);h++){
+                                    try {
+                                        comp.setIcon(new ImageIcon(deck.changeImage((DrawACard)cardPiles.get(i).get(h+1))));
+                                        //System.out.println(lastCard.getCards()[0].getCode());
+                                    } catch (MalformedURLException ex) {
+                                    }
+                                }
+                                lastLabel.setIcon(null);
+                                labelPiles.get(i).remove(labelPiles.get(i).get(4));
                                 cardPiles.get(i).remove(card);
                                 crib.add(card); //add card info to crib
                                 flip();
-                                //redraw the hand -- for label in hand, set label image to that index of card list -- so theres no empty space
-//                                for(int k = 0; k < labelPiles.get(i).size();k++){
-//                                    try {
-//                                        jLblDeck.setIcon(new ImageIcon(deck.changeImage((DrawACard)cardPiles.get(i).get(k))));
-//                                    } catch (MalformedURLException ex) {
-//                                        Logger.getLogger(CribbageWindow.class.getName()).log(Level.SEVERE, null, ex);
-//                                    }
-//                                }
                                 break;
                             }
                         }
@@ -94,9 +104,10 @@ public class CribbageWindow extends javax.swing.JFrame {
                     } catch (MalformedURLException ex) {
                         Logger.getLogger(CribbageWindow.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    JOptionPane.showMessageDialog(CribbageWindow.this, "We will now begin the counting round. You will switch back and forth trying to "
-                                                        + "count to 31. You will recieve points for hitting 15, getting a run, pair, or being the "
-                                                        + "last one to put a card down when neither player can  get to 31. Click a card to begin counting.");
+                    JOptionPane.showMessageDialog(CribbageWindow.this, """
+                                                                       We will now begin the counting round. You will switch back and forth trying to 
+                                                                       count to 31. You will recieve points for hitting 15, getting a run, pair, or being the 
+                                                                       last one to put a card down when neither player can  get to 31. Click a card to begin counting.""");
                     counting = true;
                     //flip();
                 }
@@ -104,10 +115,6 @@ public class CribbageWindow extends javax.swing.JFrame {
         
         
         // if in counting round
-        
-        //add a go button for when the player doesnt have a card low enough to be under 31 -- skip to other person 
-            // if they both hit go thenflip cards - new count and last person to put a card down gets a point
-            //go button will just increment a count -- when the count is 2 -- reset that means neither can go
         if(counting == true){
             if (componentClicked.getIcon() != deck.back && componentClicked.getIcon() != null) {
                 for(int i = 0; i < labelPiles.size();i++){
@@ -115,38 +122,74 @@ public class CribbageWindow extends javax.swing.JFrame {
                         if(labelPiles.get(i).get(j) == componentClicked){ // i = which pile , j = which card in pile
                             comp = (JLabel)labelPiles.get(i).get(j);
                             card = (DrawACard) cardPiles.get(i).get(j);
-                            //removes the old label to redraw higher -- can see which of their cards theyve used
-                            //add these to a list and remove them from our hand so they dont flip and cant be used again
-                            //in counting -- add these elements back to the hand when counting is over so that we can count hands
-//                            comp.setIcon(null);
-//                            JLabel nxt = new JLabel();
-//                            jPanel1.add(nxt);
-//                            nxt.addMouseListener(clickedHandler);
-//                            allPiles.get(oldPileIndex).add(nxt);
-//                            nxt.setIcon(new ImageIcon(changeImage(oldcard)));
-//                            nxt.setBounds(dimensions.get(oldPileIndex)[0], 160 + 20 * allPiles.get(oldPileIndex).size(), dimensions.get(oldPileIndex)[2], dimensions.get(oldPileIndex)[3]);
-                            //use set bounds and get bounds somhow to move the selected card up slightly 
-                            jLblCounterLbl.setText("Current Count");
-                            
-                            jLabelCount.setText(Integer.toString(count));
-                            if(count < 31){ //once count is at 31 counting is over
-                                count += deck.getValue(card);
+                            count += deck.getValue(card);
+                            if(i==0){ //move card up if bottom player
+                                p1ThrewLast = true;
+                            }
+                            else{ //move card down if top player
+                                p2ThrewLast = true;
+                            }
+                            if(count <= 31){ //once count is at 31 counting is over
+                                //removes the old label to redraw higher -- can see which of their cards theyve used
+                                //add these to a list and remove them from our hand so they dont flip and cant be used again
+                                //in counting -- add these elements back to the hand when counting is over so that we can count hands
+                                comp.setIcon(null);
+                                JLabel nxt = new JLabel();
+                                jPanel1.add(nxt);
+                                //nxt.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+                                nxt.addMouseListener(clickedHandler);
+                                try {
+                                    nxt.setIcon(new ImageIcon(deck.changeImage(card)));
+                                } catch (MalformedURLException ex) {
+                                    Logger.getLogger(CribbageWindow.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                System.out.println("j" + j);
+                                System.out.println("+" + (x-40));
+                                if(i==0){ //move card up if bottom player
+                                    nxt.setBounds(x-45, dimensions.get(i)[1]-50, dimensions.get(i)[2], dimensions.get(i)[3]);
+                                }
+                                else{ //move card down if top player
+                                    nxt.setBounds(x-45, dimensions.get(i)[1]+50, dimensions.get(i)[2], dimensions.get(i)[3]);
+                                }
+                                countingUsedList.add(card);
+                                countingUsedListLbls.add(nxt);
+                                cardPiles.get(i).remove(j);
+                                labelPiles.get(i).remove(j);
+                                jLblCounterLbl.setText("Current Count");
                                 jLabelCount.setText(Integer.toString(count));
+
                                 countList.add(card);
                                 if(countList.size()>1){
                                     System.out.println(countList.get(countList.size()-2).getCards()[0].getValue());
                                     System.out.println(card.getCards()[0].getValue());
-                                    //compare the value(ex: king, 8, etc) of the newly added card and the one thrown before it
+                                    //compare the value(ex: king, 8, etc) of the newly added card and the one thrown before it -- checks if theyre the same
                                     if(countList.get(countList.size()-2).getCards()[0].getValue() == null ? card.getCards()[0].getValue() == null : countList.get(countList.size()-2).getCards()[0].getValue().equals(card.getCards()[0].getValue())){
-                                        System.out.println("count lis:");
-                                        if(i == 0){ //pile1 threw down the card -- they get the point for a pair
-                                            player1.score += 2;
-                                            jLblP1Score.setText(Integer.toString(player1.score));
+                                        //only check for 3 in a row if at least 3 cards have been thrown
+                                        if(countList.size()>2){
+                                            //3 cards the same in a row -- they get 6 points instead of 2 for normal pair
+                                            if(countList.get(countList.size()-3) == countList.get(countList.size()-1)){
+                                                if(i == 0){ //pile1 threw down the card -- they get the point for a pair
+                                                    player1.score += 6;
+                                                    jLblP1Score.setText(Integer.toString(player1.score));
+                                                }
+                                                else{ //pile2  threw down the card -- they get the point for a pair
+                                                    player2.score += 6;
+                                                    jLblP2Score.setText(Integer.toString(player2.score));
+                                                }
+                                            }
+                                             //just 2 cards in a row -- regular pair -- 2 points
+                                            else{
+                                                if(i == 0){ //pile1 threw down the card -- they get the point for a pair
+                                                    player1.score += 2;
+                                                    jLblP1Score.setText(Integer.toString(player1.score));
+                                                }
+                                                else{ //pile2  threw down the card -- they get the point for a pair
+                                                    player2.score += 2;
+                                                    jLblP2Score.setText(Integer.toString(player2.score));
+                                                }
+                                            }
                                         }
-                                        else{ //pile2  threw down the card -- they get the point for a pair
-                                            player2.score += 2;
-                                            jLblP2Score.setText(Integer.toString(player2.score));
-                                        }
+                                       
                                     }
                                     if(count == 15){ //player who just made the count get to 15 gets 2 points
                                         if(i == 0){ //pile1 threw down the card -- they get the points for getting to 15
@@ -158,6 +201,12 @@ public class CribbageWindow extends javax.swing.JFrame {
                                             jLblP2Score.setText(Integer.toString(player2.score));
                                         }
                                     }
+                                    //run -- work on this - find out how to sort
+                                    if(countList.size()>2){ //must be at least 3 cards to look for a run(min size 3)
+                                        for(int c = 3; c < countList.size();c++){
+                                            
+                                        }
+                                    }
                                     if(count == 31){
                                         if(i == 0){ //pile1 threw down the card -- they get the points for getting to 31
                                             player1.score += 2;
@@ -167,35 +216,33 @@ public class CribbageWindow extends javax.swing.JFrame {
                                             player2.score += 2;
                                             jLblP2Score.setText(Integer.toString(player2.score));
                                         }
-                                        //if players have cards left
-                                            //flip over the cards that are higher(have been used)
-                                            //count = 0
-                                        ///if neither player has any cards left
-                                            //round is over since 31 is the max
-                                            //don't show counting info when we aren't in that round
-                                            counting = false;
-                                            jLblCounterLbl.setText(null);
-                                            jLabelCount.setText(null);
-                                            JOptionPane.showMessageDialog(CribbageWindow.this, "Counting round is now over. We will now count each players' hand and adjust scores accordingly");
-                                            countingHands = true;
-                                    }
-                                    if(count < 31){
-                                        if(i == 0 ){ //pile1
-                                            //if both players press go -- last person to throw down a card gets a point
+                                        jLabelCount.setText("0");
+                                        count = 0;
+                                        //flip all of the used cards
+                                        for(int k = 0; k < countingUsedListLbls.size();k++){
+                                            countingUsedListLbls.get(k).setIcon(deck.back);
                                         }
-                                        else{ //pile2
-
-                                        }
+                                        JOptionPane.showMessageDialog(CribbageWindow.this, "You counted to 31! We will start a new round of counting with your remaining cards if you have any "
+                                                + "or move onto counting hands if all cards have been used.");
                                     }
-                                    //check for a run - they can be in any order
+                                   
                                 }
+                                flip();
+                            }
+                            else{
+                                count = count - deck.getValue(card); //had to add to count so we can see if over 31 -- 
+                                                                     //card couldn't be used so put the count back
+                                JOptionPane.showMessageDialog(CribbageWindow.this, "Count cannot exceed 31. If you do not have a card low enough press GO.");
                             }
                         }
                     }
                 }
-                flip();
+                
             }
+            
         }
+        
+        
         
         // move that card up a little so its not in line with their hand -- jLblp13.setBounds(200, 330, 80, 110)
         // takes its value and display it as current count
@@ -212,10 +259,14 @@ public class CribbageWindow extends javax.swing.JFrame {
     
     /**
      * Creates new form CribbageWindow
+     * @throws java.lang.InterruptedException
      */
     public CribbageWindow() throws InterruptedException {
         initComponents();
+        go = 0;
         countList = new ArrayList<>();
+        countingUsedList = new ArrayList<>();
+        countingUsedListLbls = new ArrayList<>();
         player1 = new Player();
         p1Cards = player1.hand.getHand();
         player2 = new Player();
@@ -223,7 +274,7 @@ public class CribbageWindow extends javax.swing.JFrame {
         cardPiles = new ArrayList<>();
         cardPiles.add(p1Cards);
         cardPiles.add(p2Cards);
-        jLblP1Score.setText(Integer.toString(player1.score)); //will this update as 
+        jLblP1Score.setText(Integer.toString(player1.score)); 
         jLblP2Score.setText(Integer.toString(player2.score));
         clickedHandler = new MouseClickHandler();
         labelPiles = new ArrayList<>();
@@ -275,7 +326,11 @@ public class CribbageWindow extends javax.swing.JFrame {
             Logger.getLogger(CribbageWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        
+        dimensions = new ArrayList<>();
+        p1dimensions = new int[]{20, 330, 80, 110};
+        p2dimensions = new int[]{20, 20, 80, 110}; //each x of the following is 90 more than the first card(this one) 
+        dimensions.add(p1dimensions);
+        dimensions.add(p2dimensions);
         
         //have a message that says whenever ready, select one card to dispose of to the crib
         //Thread.sleep(1);
@@ -291,6 +346,31 @@ public class CribbageWindow extends javax.swing.JFrame {
         
         
         // call count hand method from hand on player1, then player2, then crib
+        if(countingHands == true){
+            //add the deck card to the hand!!!!! - but keep track of which is deck card somehow 
+            //player that has the crib goes last
+            //add messages to tell them how many points they earned
+            if(player2.hasCrib){
+                //show player 1's cards
+                JOptionPane.showMessageDialog(CribbageWindow.this, "We will now count player 1's hand and update the score");
+                //tell them how  many points they got 
+                jLblP1Score.setText(Integer.toString(player1.hand.countHand(p1Cards)));
+                JOptionPane.showMessageDialog(CribbageWindow.this, "We will now count player 2's hand and update the score");
+                flip();
+                //tell them how  many points they got 
+                jLblP2Score.setText(Integer.toString(player2.hand.countHand(p2Cards)));
+                jLblP2Score.setText(Integer.toString(player2.hand.countHand(crib)));
+                
+            }else{
+                //show player 2's hands 
+                JOptionPane.showMessageDialog(CribbageWindow.this, "We will now count player 2's hand and update the score");
+                jLblP2Score.setText(Integer.toString(player2.hand.countHand(p2Cards)));
+                JOptionPane.showMessageDialog(CribbageWindow.this, "We will now count player 1's hand and update the score");
+                flip(); 
+                jLblP1Score.setText(Integer.toString(player1.hand.countHand(p1Cards)));
+                jLblP1Score.setText(Integer.toString(player1.hand.countHand(crib)));
+            }
+        }
         // update players' scores based on each count value returned
         // if p1HasCrib == true -- crib count gets added to p1 score else gets added to p1 score
         // countHands = false
@@ -334,6 +414,7 @@ public class CribbageWindow extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         jLblCounterLbl = new javax.swing.JLabel();
         jLabelCount = new javax.swing.JLabel();
+        jBtnGo = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -357,7 +438,6 @@ public class CribbageWindow extends javax.swing.JFrame {
 
         jLblp21.setBackground(new java.awt.Color(255, 255, 255));
         jLblp21.setIcon(new javax.swing.ImageIcon(getClass().getResource("/backOfDeck (4) 10.25.33 PM.jpeg"))); // NOI18N
-        jLblp21.setText("back");
         jPanel1.add(jLblp21);
         jLblp21.setBounds(20, 20, 80, 110);
 
@@ -389,22 +469,22 @@ public class CribbageWindow extends javax.swing.JFrame {
         jLblP2Score.setText("0");
         jLblP2Score.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanel1.add(jLblP2Score);
-        jLblP2Score.setBounds(660, 340, 80, 90);
+        jLblP2Score.setBounds(660, 50, 80, 90);
 
         jLblP1Score.setFont(new java.awt.Font("Hiragino Sans GB", 0, 30)); // NOI18N
         jLblP1Score.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLblP1Score.setText("0");
         jLblP1Score.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanel1.add(jLblP1Score);
-        jLblP1Score.setBounds(660, 40, 80, 90);
+        jLblP1Score.setBounds(660, 350, 80, 90);
 
         jLabel4.setText("Player 1 Score");
         jPanel1.add(jLabel4);
-        jLabel4.setBounds(660, 10, 90, 20);
+        jLabel4.setBounds(660, 320, 90, 20);
 
         jLabel5.setText("Player 2 Score");
         jPanel1.add(jLabel5);
-        jLabel5.setBounds(660, 310, 90, 20);
+        jLabel5.setBounds(660, 20, 90, 20);
 
         jLblp25.setBackground(new java.awt.Color(255, 255, 255));
         jLblp25.setIcon(new javax.swing.ImageIcon(getClass().getResource("/backOfDeck (4) 10.25.33 PM.jpeg"))); // NOI18N
@@ -427,19 +507,27 @@ public class CribbageWindow extends javax.swing.JFrame {
         jPanel1.add(jLabel6);
         jLabel6.setBounds(650, 160, 90, 20);
         jPanel1.add(jLblCounterLbl);
-        jLblCounterLbl.setBounds(280, 170, 110, 20);
+        jLblCounterLbl.setBounds(280, 190, 110, 20);
 
         jLabelCount.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jPanel1.add(jLabelCount);
-        jLabelCount.setBounds(320, 207, 30, 40);
+        jLabelCount.setBounds(320, 220, 30, 40);
+
+        jBtnGo.setText("GO");
+        jBtnGo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBtnGoActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jBtnGo);
+        jBtnGo.setBounds(20, 220, 72, 23);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 762, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 768, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -454,15 +542,57 @@ public class CribbageWindow extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void flip(){
-        if (p1.get(0).getIcon() != deck.back) {
+        if(p1.isEmpty() && p2.isEmpty()){ //no one has any cards left
+            JOptionPane.showMessageDialog(this, "Since no one has cards left, the counting round is over. The player that put down the"
+                                                + " last card will get a point. Each player's hand will now be counted and points will be awarded.");
+            if(p1ThrewLast == true){
+                player1.score += 1;
+                jLblP1Score.setText(Integer.toString(player2.score));
+            }
+            else if(p2ThrewLast == true){
+                player2.score += 1;
+                jLblP2Score.setText(Integer.toString(player2.score));
+            }
+            jLabelCount.setText("0");
+            count = 0;
+            //whoever threw the last card gets the point 
+            //message that that person gets a point and the counting round is over and we will now count hands since everyone
+            //is out of cards
+            //flip all cards and put them in their original positions
+            for(JLabel card:countingUsedListLbls){
+                System.out.println("asokdnjdkf");
+                card.setIcon(null);
+                jPanel1.remove(card);
+            }
+            
+            for(int k = 0; k < 2;k++){
+                for(int i = 0; i < 4;i++){
+                    JLabel nxt = new JLabel();
+                    jPanel1.add(nxt);
+                    nxt.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+                    nxt.addMouseListener(clickedHandler);
+                    //labelPiles.get(i).add(nxt);
+                    nxt.setIcon(deck.back);
+                    nxt.setBounds(dimensions.get(k)[0] + 90*i, dimensions.get(k)[1], dimensions.get(k)[2], dimensions.get(k)[3]);
+                    
+                    //this doesn't work 
+                    // have 2 copies of the original list of cards -- remove from one for flipping purposes and use the other to re add them back to original here
+                    cardPiles.get(k).add((DrawACard)cardPiles.get(k).get(i));
+                    labelPiles.get(k).add(nxt);
+                }
+            }
+            countingUsedList.clear();
+            countingUsedListLbls.clear();
+            counting = false;
+            countingHands = true;
+        }
+        else if(p1.isEmpty() || p1.get(0).getIcon() != deck.back) {
             //player one is showing -- switch to player 2 showing
-            //System.out.println("next");
+        
             for (int i = 0; i < p2.size();i++) {
-                try {
-                    //System.out.println(new ImageIcon(deck.changeImage(p2Cards.get(i))));
+                try{
                     p2.get(i).setIcon(new ImageIcon(deck.changeImage(p2Cards.get(i))));
                 } catch (MalformedURLException ex) {
-                    Logger.getLogger(CribbageWindow.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 for(int j = 0; j < p1.size();j++){
                     p1.get(j).setIcon(deck.back);
@@ -477,7 +607,7 @@ public class CribbageWindow extends javax.swing.JFrame {
                 try {
                     p1.get(i).setIcon(new ImageIcon(deck.changeImage(p1Cards.get(i))));
                 } catch (MalformedURLException ex) {
-                    Logger.getLogger(CribbageWindow.class.getName()).log(Level.SEVERE, null, ex);
+        
                 }
                 for(int j = 0; j < p2.size();j++){
                     p2.get(j).setIcon(deck.back);
@@ -487,16 +617,40 @@ public class CribbageWindow extends javax.swing.JFrame {
 
     }
     
-    
     /**
      * when clicked, the cards for the other player will show and the player whose cards are currently showing will be flipped
      * @param evt 
      */
     private void changePlayerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changePlayerBtnActionPerformed
-        
         flip();
-
     }//GEN-LAST:event_changePlayerBtnActionPerformed
+
+    private void jBtnGoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnGoActionPerformed
+        go = go + 1;
+        System.out.println(go);
+        if(go < 2){
+            flip();
+        }
+        else if(go == 2){
+            if(p1ThrewLast){ //if player 1's cards are showing that means they are the second to press go
+                                                  // player 2 pressed go also so player 1 must've thrown the last card
+                player1.score += 1;
+                jLblP1Score.setText(Integer.toString(player1.score));
+            }
+            else{ //pile2
+                player2.score += 2;
+                jLblP2Score.setText(Integer.toString(player2.score));
+            } 
+            JOptionPane.showMessageDialog(CribbageWindow.this, "Since no one has low enough cards to continue counting, the last player to throw a card will "
+                                                    + "get a point and we will restart the count from 0. Use your remaining cards to continue the round");
+            jLabelCount.setText("0"); 
+            count = 0;
+            //flip all of the used cards
+            for(int k = 0; k < countingUsedListLbls.size();k++){
+                countingUsedListLbls.get(k).setIcon(deck.back);
+            }
+        }
+    }//GEN-LAST:event_jBtnGoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -539,6 +693,7 @@ public class CribbageWindow extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton changePlayerBtn;
+    private javax.swing.JButton jBtnGo;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;

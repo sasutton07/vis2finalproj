@@ -24,13 +24,13 @@ import javax.swing.ImageIcon;
  * @author samsutton
  */
 public class Deck {
-    private ImageIcon back;
+    public ImageIcon back;
     private NewDeck newResp;   //deck resp
     private Gson gson = new Gson();
     
     
     public Deck(){
-        back = new ImageIcon(getClass().getResource("/backOfDeck (4).jpeg"));
+        back = new ImageIcon(getClass().getResource("/backOfDeck (4) 10.25.33 PM.jpeg"));
         try {
             //url for a shuffle new deck initialization
             URL shuffleUrl = new URL("https://www.deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1");
@@ -48,6 +48,10 @@ public class Deck {
     
     
     //get card from api
+    /**
+     * makes a call to the api to grab a card and all its info from the deck
+     * @return a card and its info
+     */
     public DrawACard getACard() {
         DrawACard drawResp;
         try {
@@ -66,25 +70,30 @@ public class Deck {
         }
 
     }
-    private int getSuitColor(DrawACard card) {
-        int suit = 0;
-        if (null != card.getCards()[0].getSuit()) {
-            switch (card.getCards()[0].getSuit()) {
-                case "SPADES" ->
-                    suit = 0;
-                case "CLUBS" ->
-                    suit = 0;
-                case "HEARTS" ->
-                    suit = 1;
-                case "DIAMONDS" ->
-                    suit = 1;
-                default -> {
-                }
-            }
-        }
-        return suit;
-    }
-    private int getValue(DrawACard card) {
+//    private int getSuitColor(DrawACard card) {
+//        int suit = 0;
+//        if (null != card.getCards()[0].getSuit()) {
+//            switch (card.getCards()[0].getSuit()) {
+//                case "SPADES" ->
+//                    suit = 0;
+//                case "CLUBS" ->
+//                    suit = 0;
+//                case "HEARTS" ->
+//                    suit = 1;
+//                case "DIAMONDS" ->
+//                    suit = 1;
+//                default -> {
+//                }
+//            }
+//        }
+//        return suit;
+//    }
+    /**
+     * when passed a card will return the numerical value we'll use for counting based on the cards value(A,K,6,etc)
+     * @param card
+     * @return the value of the card
+     */
+    public int getValue(DrawACard card) {
         int value = 0;
         if (null != card.getCards()[0].getValue()) {
             switch (card.getCards()[0].getValue()) {
@@ -111,17 +120,24 @@ public class Deck {
                 case "10" ->
                     value = 10;
                 case "JACK" ->
-                    value = 11;
+                    value = 10;
                 case "QUEEN" ->
-                    value = 12;
+                    value = 10;
                 case "KING" ->
-                    value = 13;
+                    value = 10;
                 default -> {
                 }
             }
         }
         return value;
     }
+    /**
+     * resizes the image from the api to fit the size of our labels
+     * @param url
+     * @param size
+     * @return an image
+     * @throws IOException 
+     */
     // from https://stackoverflow.com/questions/18550284/java-resize-image-from-an-url
     public BufferedImage resize(URL url, Dimension size) throws IOException {
         BufferedImage image = ImageIO.read(url);
@@ -133,6 +149,12 @@ public class Deck {
     }
     //end stackoverflow code  
     
+    /**
+     * shortcut method that we will use a lot which takes a card, gets its image, and resizes it to be changed in the window
+     * @param card
+     * @return
+     * @throws MalformedURLException 
+     */
     public BufferedImage changeImage(DrawACard card) throws MalformedURLException {
         BufferedImage img = null;
         try {
