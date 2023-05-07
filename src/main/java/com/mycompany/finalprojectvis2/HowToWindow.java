@@ -4,8 +4,11 @@
  */
 package com.mycompany.finalprojectvis2;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
- *
+ * window that tells the player the rules
  * @author samsutton
  */
 public class HowToWindow extends javax.swing.JFrame {
@@ -26,21 +29,92 @@ public class HowToWindow extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
+        jBtnMainMenu = new javax.swing.JButton();
+        jBtnStartGame = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("How to Play");
+
+        jLabel1.setFont(new java.awt.Font("SignPainter", 0, 30)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(0, 102, 102));
+        jLabel1.setText("How To Play Cribbage");
+
+        jTextArea1.setBackground(new java.awt.Color(209, 209, 229));
+        jTextArea1.setColumns(20);
+        jTextArea1.setFont(new java.awt.Font("Optima", 0, 14)); // NOI18N
+        jTextArea1.setRows(5);
+        jTextArea1.setText("Round 1: \n   - Each player will be dealt 5 cards from the deck\n   - You will then each get rid of 1 card that will be added to the crib(like an extra hand that will rotate each \n      round for which player gets its points\n   - In your hand you want to have as many points as possible. Your hand will also include a card from the \n     deck that will be shown after both players get rid of a card. You can get points from:\n      -  cards adding up to 15(2 pts)\n      -  2 cards of the same value (2 pts) or 3 cards of the same value (6pts) or 4 cards of the same value(12 pts)\n      -  a run of cards (ex: 2,3,4 or J,Q,K) (Aces are low) (1 pt per card in run)\n      -  all 4 cards in your hand of the same suit (4pts)\n      -  all 5 cards(including deck card) of the same suit (5pts)\n   - Low cards will also be important for the next round so keep that in mind\n\nRound 2:\n   - The crib will also get 2 random cards from the deck to make it a full hand\n   - Once this is complete, the players will go back and forth choosing a card to count with. The total count \n     will be the value of all cards thrown so far\n   Goals:\n       -  be the one to throw down the card that makes the total count 15 (2pts)\n       -  throw a card that creates a run (does not need to be chronological but cards must be together) \n          (ex: 6,8,7 works but 6,10,8,7 does not since there is a break in between) (1 pt per card in run)\n      -  create a pair (must be next to eachother) (6,6 yes, 6,5,6 no) (2 pts for 2 or 3 or 4 pts for 3 or 4)\n      -  be the one to get the count to 31 (2pts)\n      -  get the count to less than 31, but neither player has a card that will kep the score <= 31 -- after this \n         if players have cards left the count will restart from 0 and you can only use cards in your hand that \n         have not been played\n   - This round will end after both players have used all of their cards\n\nRound 3:\n   - The player who does not have the crib's hand will be counted first based on the rules explained in round\n     1 and score will be adjusted accordingly\n   - The player who does have the crib's hand will be counted next, score will be adjusted, and then the crib \n     will be counted and the crib's score will be added to this players score\n\nObjective/How to Win\n   - The player to get to 121 points or more first wins! (In a traditional game there are 121 peg holes)");
+        jScrollPane1.setViewportView(jTextArea1);
+
+        jBtnMainMenu.setText("Main Menu");
+        jBtnMainMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBtnMainMenuActionPerformed(evt);
+            }
+        });
+
+        jBtnStartGame.setText("Start Game");
+        jBtnStartGame.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBtnStartGameActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 407, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1)
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jBtnMainMenu)
+                        .addGap(144, 144, 144)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 141, Short.MAX_VALUE)
+                        .addComponent(jBtnStartGame)
+                        .addGap(20, 20, 20))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 435, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jBtnMainMenu)
+                    .addComponent(jBtnStartGame))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 622, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    /**
+     * when clicked, opens a new WelcomeWindow
+     * @param evt 
+     */
+    private void jBtnMainMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnMainMenuActionPerformed
+        this.setVisible(false);
+        new WelcomeWindow().setVisible(true);
+    }//GEN-LAST:event_jBtnMainMenuActionPerformed
+    /**
+     * when clicked, opens a new CribbageWindow
+     * @param evt 
+     */
+    private void jBtnStartGameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnStartGameActionPerformed
+        this.setVisible(false);
+        try {
+            new CribbageWindow().setVisible(true);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(HowToWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jBtnStartGameActionPerformed
 
     /**
      * @param args the command line arguments
@@ -78,5 +152,10 @@ public class HowToWindow extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jBtnMainMenu;
+    private javax.swing.JButton jBtnStartGame;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextArea jTextArea1;
     // End of variables declaration//GEN-END:variables
 }
