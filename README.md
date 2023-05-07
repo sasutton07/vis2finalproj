@@ -1,5 +1,54 @@
 # vis2finalproj
+## Cribbage
 
-This project allows a user to play a game of cribbage. To begin run the welcome window class and select new game. This will show you a message and then pop up a new cribbage window. Messages will guide the user through each section of the game and the how to window on the welcome window will tell the user the rules of the game. To begin each user discards of a card that will be added to the crib. Then each takes turns back and forth placing down a card and points will be awarded accordingly. This round continues until you hit 31 or no one has cards low enough to continue. If users have cards left, a new counting round will begin. Then each player's hand will be counted and scored. Once this is over, players will get new hands and all will restart with th exceprions of the players' overall socres. The plyaer to get 121 points first wins
+This project allows a user to play a game of cribbage. To begin run the welcome window class and select new game. This will show you a message and then pop up a new cribbage window. The plyaer to get 121 points first wins. More detailed information about the rules of the game can be found in the How To Play window found from the welcome window.
 
-deck of cards api was used
+## Contents
+pom.xml --
+src /   --
+  main/
+    java/
+      com/
+        mycompany/
+          finalprojectvis2/
+            Card.java
+            CribbageWindow.form
+            CribbageWindow.java
+            Deck.java
+            Hand.java
+            HowToWindow.form
+            HowToWindow.java
+            Image.java
+            NewDeck.java
+            Player.java
+            SingleCard.java
+            WelcomeWindow.form
+            WelcomeWindow.java
+    resources/
+      backOfDeck (4) 10.25.33 PM.jpeg
+      243133.jpeg
+      1804142.png
+      backOfDeck (4) 10.25.33 PM_1.jpeg
+      pngimg.com - cards_PNG8474.jpeg
+      transparent_icons_222.jpeg
+      
+  test/
+    java/
+files/  --
+target/ --
+nbactions.xml --
+
+## Building
+You must have maven installed
+```bash
+mvn package
+```
+## Running
+make sure that you are inside of the finalprojectvis2 folder
+```bash
+javac **/*.java
+java WelcomeWindow.java
+```
+the first line will compile all of the files and the second will run the welcome window
+
+deck of cards api was used -- https://deckofcardsapi.com/ 
