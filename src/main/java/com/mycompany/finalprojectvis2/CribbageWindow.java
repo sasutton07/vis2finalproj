@@ -954,7 +954,8 @@ public class CribbageWindow extends javax.swing.JFrame {
                            At any point type 'player1' or 'player2' in the command line to be told what your score would be if you 
                            removed each card. This may be especially helpful when deciding which card elimination will give you 
                            the most points. Don't entirely rely on this though. Keep in mind that the deck card that will be 
-                           flipped after cards are removed can be very helpful in scoring points.
+                           flipped after cards are removed can be very helpful in scoring points. 
+                           Or say --help for more info
                            """);
         String input = sc.nextLine();  // Read user input
         if("player1".equals(input)){
@@ -975,6 +976,21 @@ public class CribbageWindow extends javax.swing.JFrame {
                 System.out.println("If you get rid of card " + card.getCards()[0].getCode() + " the hand will score " + score + " points");
                 p2Cards.add(card);
             }
+        }
+        else if("--help".equals(input)){
+            System.out.println("""
+                           This interface will help you determine what card in your hand to get rid of.
+                           What to enter: say either "player1" or "player2"
+                           What info you'll get: the program will take the hand you have requested and
+                               count the hand for every combination of 4. It will tell you how many points
+                               your hand will score without a certain card. For example, "if you get rid of
+                               10S, your hand will score 3 points. And you will get this output for every 
+                               possibility of a card that would be given up.
+                            Disclaimer: The deck will draw a card after each player has gotten rid of one,
+                                so keep an eye out for possible points. For example, if you have a 6 and a 7, 
+                                they may not be helpful in your current hand, but you could get a 5 or 8 from
+                                the deck that would give you 3 points.
+                           """);
         }
         else{
              System.out.println("invalid input please try again");
