@@ -5,7 +5,7 @@
 package com.mycompany.finalprojectvis2;
 
 /**
- *
+ * gets card information from the api
  * @author samsutton
  */
 public class Card {

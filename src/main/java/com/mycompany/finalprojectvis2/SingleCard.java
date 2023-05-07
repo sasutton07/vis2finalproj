@@ -5,10 +5,10 @@
 package com.mycompany.finalprojectvis2;
 
 /**
- *
+ * Holds information about a card from the api and holds logic for comparing cards
  * @author samsutton
  */
-public class DrawACard implements Comparable<DrawACard>{
+public class SingleCard implements Comparable<SingleCard>{
     private boolean success;
     private String deck_id;
     private Card[] cards;
@@ -30,9 +30,9 @@ public class DrawACard implements Comparable<DrawACard>{
     }
 
     @Override
-    public int compareTo(DrawACard object) {
-        Deck deck = new Deck();
-        return deck.getValue(this) - deck.getValue(object);
+    public int compareTo(SingleCard object) {
+        Deck deck = Deck.getInstance();
+        return deck.getValueUniqNum(this) - deck.getValueUniqNum(object);
     }
     
     

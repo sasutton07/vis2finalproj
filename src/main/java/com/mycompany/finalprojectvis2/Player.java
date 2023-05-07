@@ -5,7 +5,7 @@
 package com.mycompany.finalprojectvis2;
 
 /**
- *
+ * holds information about a player
  * @author samsutton
  */
 public class Player {

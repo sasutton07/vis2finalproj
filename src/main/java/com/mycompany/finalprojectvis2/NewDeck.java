@@ -5,7 +5,6 @@
 package com.mycompany.finalprojectvis2;
 
 /**
- *
  * used to get a new deck from the api -- holds all the information the api returns and has getters for values
  */
 

@@ -6,7 +6,7 @@ package com.mycompany.finalprojectvis2;
  */
 
 /**
- *
+ * handles the image information from the api
  * @author samsutton
  */
 public class Image {

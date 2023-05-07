@@ -8,7 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * window to introduce the user to the game and guide them to other windows
  * @author samsutton
  */
 public class WelcomeWindow extends javax.swing.JFrame {
@@ -32,60 +32,60 @@ public class WelcomeWindow extends javax.swing.JFrame {
         jBtnNewGame = new javax.swing.JButton();
         jBtnHowTo = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        canvas1 = new java.awt.Canvas();
+        jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Welcome Window");
+        setMinimumSize(new java.awt.Dimension(450, 360));
+        getContentPane().setLayout(null);
 
+        jBtnNewGame.setFont(new java.awt.Font("Optima", 0, 13)); // NOI18N
         jBtnNewGame.setText("New Game");
         jBtnNewGame.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jBtnNewGameActionPerformed(evt);
             }
         });
+        getContentPane().add(jBtnNewGame);
+        jBtnNewGame.setBounds(140, 156, 103, 22);
 
+        jBtnHowTo.setFont(new java.awt.Font("Optima", 0, 13)); // NOI18N
         jBtnHowTo.setText("How To Play");
         jBtnHowTo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jBtnHowToActionPerformed(evt);
             }
         });
+        getContentPane().add(jBtnHowTo);
+        jBtnHowTo.setBounds(140, 190, 104, 22);
 
         jLabel1.setBackground(new java.awt.Color(153, 153, 255));
-        jLabel1.setFont(new java.awt.Font("Khmer MN", 0, 36)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("SignPainter", 1, 55)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(0, 102, 102));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Cribbage");
         jLabel1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        getContentPane().add(jLabel1);
+        jLabel1.setBounds(80, 90, 220, 60);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(140, 140, 140)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jBtnHowTo)
-                            .addComponent(jBtnNewGame, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(115, 115, 115)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(130, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(83, Short.MAX_VALUE)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jBtnNewGame)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jBtnHowTo)
-                .addGap(85, 85, 85))
-        );
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/pngimg.com - cards_PNG8474.jpeg"))); // NOI18N
+        getContentPane().add(jLabel2);
+        jLabel2.setBounds(0, 140, 240, 160);
+        getContentPane().add(canvas1);
+        canvas1.setBounds(330, 210, 0, 0);
+
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/243133.jpeg"))); // NOI18N
+        getContentPane().add(jLabel3);
+        jLabel3.setBounds(270, 20, 130, 130);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    /**
+     * when clicked opens a new CribbageWindow
+     * @param evt 
+     */
     private void jBtnNewGameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnNewGameActionPerformed
         // TODO add your handling code here:
         this.setVisible(false);
@@ -94,7 +94,10 @@ public class WelcomeWindow extends javax.swing.JFrame {
         } catch (InterruptedException ex) {
         }
     }//GEN-LAST:event_jBtnNewGameActionPerformed
-
+    /**
+     * when clicked opens a new how to window
+     * @param evt 
+     */
     private void jBtnHowToActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnHowToActionPerformed
         // TODO add your handling code here:
         this.setVisible(false);
@@ -139,8 +142,11 @@ public class WelcomeWindow extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private java.awt.Canvas canvas1;
     private javax.swing.JButton jBtnHowTo;
     private javax.swing.JButton jBtnNewGame;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     // End of variables declaration//GEN-END:variables
 }
