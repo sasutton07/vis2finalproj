@@ -46,8 +46,7 @@ mvn package
 ## Running
 make sure that you are inside of the finalprojectvis2 folder
 ```bash
-javac **/*.java
-java WelcomeWindow.java
+java -jar target/finalProjectVis2-1.0-SNAPSHOT.jar -cp target/finalProjectVis2-1.0-SNAPSHOT-jar-with-dependencies.jar
 ```
 the first line will compile all of the files and the second will run the welcome window
 
